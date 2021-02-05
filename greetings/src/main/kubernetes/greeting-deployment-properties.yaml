@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greeting-demo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greeting-demo
+  template:
+    metadata:
+      labels:
+        app: greeting-demo
+    spec:
+      containers:
+      - name: greeting-demo
+        image: quay.io/lordofthejars/greetings-jvm:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: application-config # <1>
+          mountPath: "/etc/config" # <2>
+      volumes:
+      - name: application-config # <3>
+        configMap:
+          name: greeting-config # <4>
+          items:
+          - key: conf.properties # <5>
+            path: conf.properties # <6>

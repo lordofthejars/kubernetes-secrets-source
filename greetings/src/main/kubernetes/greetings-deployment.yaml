@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greeting-demo-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: greeting-demo
+  template:
+    metadata:
+      labels:
+        app: greeting-demo
+    spec:
+      containers:
+      - name: greeting-demo
+        image: quay.io/lordofthejars/greetings-jvm:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080

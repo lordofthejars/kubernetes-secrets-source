@@ -1,0 +1,4 @@
+db:
+  host: "mydb.tst.local"
+  username: "admin"
+  password: "supersecret-tst"

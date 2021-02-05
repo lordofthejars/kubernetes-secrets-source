@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: greeting-config
+data:
+  conf.properties: | # <1> <2>
+    greeting.message=Hello Alexandra

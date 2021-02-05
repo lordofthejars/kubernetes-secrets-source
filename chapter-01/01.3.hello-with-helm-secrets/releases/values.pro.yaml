@@ -1,0 +1,4 @@
+db:
+  host: "mydb.pro.local"
+  username: "admin"
+  password: "supersecret-pro"

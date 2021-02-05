@@ -1,0 +1,4 @@
+db:
+  host: "mydb.pre.local"
+  username: "admin"
+  password: "supersecret-pre"
