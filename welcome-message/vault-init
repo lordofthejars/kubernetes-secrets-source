@@ -1,0 +1,20 @@
+vault login
+vault secrets enable database
+vault write database/config/mydb plugin_name=postgresql-database-plugin allowed_roles=mydbrole connection_url=postgresql://{{username}}:{{password}}@postgres:5432/db?sslmode=disable username=admin password=admin
+
+cat <<EOF > vault-postgres-creation.sql
+CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "{{name}}";
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public to "{{name}}";
+EOF
+
+vault write database/roles/mydbrole db_name=mydb creation_statements=@vault-postgres-creation.sql default_ttl=1h max_ttl=24h revocation_statements="ALTER ROLE \"{{name}}\" NOLOGIN;" renew_statements="ALTER ROLE \"{{name}}\" VALID UNTIL '{{expiration}}';"
+
+cat <<EOF | vault policy write vault-secrets-policy -
+path "secret/data/myapps/welcome/*" {
+  capabilities = ["read"]
+}
+path "database/creds/mydbrole" {
+  capabilities = [ "read" ]
+}
+EOF

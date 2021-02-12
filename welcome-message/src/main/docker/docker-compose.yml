@@ -1,0 +1,16 @@
+version: "3.3"
+services:
+  vault:
+    image: "vault:1.5.7"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root
+    ports:
+      - "8200:8200"
+  postgres:
+    image: "postgres:12.5"
+    environment: 
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
