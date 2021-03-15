@@ -1,0 +1,63 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-vault
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      volumes:
+      - name: vault-scripts-volume
+        configMap:
+          name: vault-scripts
+          defaultMode: 0777
+      containers:
+      - name: init-vault
+        image: vault:1.6.2
+        envFrom:
+          - secretRef:
+              name: vault-secrets
+        volumeMounts:
+          - mountPath: /vault-scripts
+            name: vault-scripts-volume
+        command:
+          - /bin/ash
+          - -c
+          - |
+            export VAULT_ADDR=http://vault:8200
+            vault login $VAULT_LOGIN
+            vault auth enable kubernetes
+            vault secrets enable database
+            vault write database/config/mydb plugin_name=postgresql-database-plugin allowed_roles=mydbrole connection_url=postgresql://{{username}}:{{password}}@postgres:5432/db?sslmode=disable username=admin password=admin
+            vault write database/roles/mydbrole db_name=mydb creation_statements=@/vault-scripts/vault-postgres-creation.sql default_ttl=1h max_ttl=24h revocation_statements="ALTER ROLE \"{{name}}\" NOLOGIN;" renew_statements="ALTER ROLE \"{{name}}\" VALID UNTIL '{{expiration}}';"
+            vault policy write vault-secrets-policy /vault-scripts/vault-secrets-policy.hcl
+            vault kv put secret/myapps/welcome/config name-service-token=$NAME_SERVICE_TOKEN
+      restartPolicy: Never
+  backoffLimit: 2
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    vault-postgres-creation.sql: |
+      CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+      GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "{{name}}";
+      GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public to "{{name}}";
+    vault-secrets-policy.hcl: |
+      path "secret/data/myapps/welcome/*" {
+        capabilities = ["read"]
+      }
+      path "database/creds/mydbrole" {
+        capabilities = [ "read" ]
+      }
+      path "auth/kubernetes/role/*" {
+        capabilities = ["read", "create", "update", "delete"]
+      }
+  kind: ConfigMap
+  metadata:
+    name:  vault-scripts
+kind: List
+metadata: {}
