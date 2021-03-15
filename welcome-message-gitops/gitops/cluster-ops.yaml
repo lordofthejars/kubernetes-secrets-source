@@ -10,7 +10,8 @@ spec:
       prune: true
       selfHeal: true
   source:
-    repoURL: http://gitea:3000/gitea/kubernetes-secrets-source.git
+    # repoURL: http://gitea:3000/gitea/kubernetes-secrets-source.git
+    repoURL: https://github.com/lordofthejars/kubernetes-secrets-source.git
     targetRevision: HEAD
     path: welcome-message-gitops/cluster
   destination:
