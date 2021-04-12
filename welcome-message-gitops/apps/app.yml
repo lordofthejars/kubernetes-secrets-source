@@ -1,51 +1,19 @@
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    app.quarkus.io/vcs-url: https://github.com/lordofthejars/kubernetes-secrets-source.git
-    app.quarkus.io/build-timestamp: 2021-03-09 - 16:05:47 +0000
-    app.quarkus.io/commit-id: 1fba460a4cce99fe47954107c720290179673c74
-  labels:
-    app.kubernetes.io/name: welcome-message
-    app.kubernetes.io/version: 1.0.0
-  name: welcome-message
-spec:
-  ports:
-  - name: http
-    port: 8080
-    targetPort: 8080
-  selector:
-    app.kubernetes.io/name: welcome-message
-    app.kubernetes.io/version: 1.0.0
-  type: LoadBalancer
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    app.quarkus.io/vcs-url: https://github.com/lordofthejars/kubernetes-secrets-source.git
-    app.quarkus.io/build-timestamp: 2021-03-09 - 16:05:47 +0000
-    app.quarkus.io/commit-id: 1fba460a4cce99fe47954107c720290179673c74
   labels:
     app.kubernetes.io/name: welcome-message
-    app.kubernetes.io/version: 1.0.0
   name: welcome-message
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: welcome-message
-      app.kubernetes.io/version: 1.0.0
   template:
     metadata:
-      annotations:
-        app.quarkus.io/vcs-url: https://github.com/lordofthejars/kubernetes-secrets-source.git
-        app.quarkus.io/build-timestamp: 2021-03-09 - 16:05:47 +0000
-        app.quarkus.io/commit-id: 1fba460a4cce99fe47954107c720290179673c74
       labels:
         app.kubernetes.io/name: welcome-message
-        app.kubernetes.io/version: 1.0.0
     spec:
       containers:
       - env:
