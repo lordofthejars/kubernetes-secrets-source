@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agents
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: agents
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: agents
+    spec:
+      containers:
+        - env:
+            - name: QUARKUS_VAULT_AUTHENTICATION_CLIENT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: token
+                  name: agents-vault-token
+          image: quay.io/ablock/agents
+          imagePullPolicy: Always
+          name: agents
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always
+      serviceAccountName: agents
