@@ -1,0 +1,10 @@
+{{- if .Values.configMap.create -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "greeting-demo.fullname" . }}
+  labels:
+    {{- include "greeting-demo.labels" . | nindent 4 }}
+data:
+  greeting.message: {{ required "A valid greeting message is required!" $.Values.greeting.message | quote }}
+{{- end }}
