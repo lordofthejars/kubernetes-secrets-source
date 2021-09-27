@@ -1,0 +1,4 @@
+apiVersion: v2
+name: greeting-demo
+description: A Simple Helm Chart that exposes an environment variable configured in a ConfigMap or 
+version: 0.1.0
